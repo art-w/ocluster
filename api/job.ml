@@ -18,7 +18,7 @@ let local ~switch ~outcome ~stream_log_data =
       Service.return_lwt @@ fun () ->
       stream_log_data ~start >|= fun (log, next) ->
       let response, results = Service.Response.create Results.init_pointer in
-      Results.log_set results log;
+      Raw.init_data (Results.log_get results) log ;
       Results.next_set results next;
       Ok response
 
@@ -50,7 +50,8 @@ let log t start =
   let request, params = Capability.Request.create Params.init_pointer in
   Params.start_set params start;
   Capability.call_for_value t method_id request |> Lwt_result.map @@ fun x ->
-  (Results.log_get x, Results.next_get x)
+  let ptr = Results.log_get x in
+  (Raw.deref_data ptr, Results.next_get x)
 
 let result t =
   let open X.Result in
