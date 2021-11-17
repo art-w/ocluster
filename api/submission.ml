@@ -34,7 +34,7 @@ let obuilder_build spec =
   Obuilder_build { Obuilder_job.Spec.spec = `Contents spec }
 
 let get_action descr =
-  let module JD = Raw.Reader.JobDescr in
+  let module JD = Raw.Reader.BuildDescr in
   match JD.action_get descr |> JD.Action.get with
   | DockerBuild action -> Docker_build (Docker.Spec.read action)
   | Obuilder action -> Obuilder_build (Obuilder_job.Spec.read action)
@@ -42,11 +42,12 @@ let get_action descr =
 
 let submit ?src ?(urgent=false) ?(secrets=[]) t ~pool ~action ~cache_hint =
   let open X.Submit in
-  let module JD = Raw.Builder.JobDescr in
+  let module JD = Raw.Builder.BuildDescr in
   let request, params = Capability.Request.create Params.init_pointer in
   Params.pool_set params pool;
   Params.urgent_set params urgent;
   let b = Params.descr_get params in
+  let b = JD.init_pointer b in
   let act = JD.action_init b in
   begin match action with
     | Docker_build action ->

@@ -1,7 +1,7 @@
 open Lwt.Infix
 open Capnp_rpc_lwt
 
-type job_desc = Raw.Reader.JobDescr.t
+type job_desc = Raw.Reader.pointer_t
 
 let local ~pop ~set_active ~release =
   let module X = Raw.Service.Queue in
@@ -19,7 +19,7 @@ let local ~pop ~set_active ~release =
         Capability.with_ref job @@ fun job ->
         pop ~job |> Lwt_result.map @@ fun descr ->
         let response, results = Service.Response.create Results.init_pointer in
-        let _ : Raw.Builder.JobDescr.t = Results.descr_set_reader results descr in
+        let _ : Raw.Builder.pointer_t = Results.descr_set_reader results descr in
         response
 
     method set_active_impl params release_param_caps =

@@ -127,7 +127,8 @@ let docker_push ~switch ~log t hash { Cluster_api.Docker.Spec.target; auth } =
   )
 
 let build ~switch ~log t descr =
-  let module R = Cluster_api.Raw.Reader.JobDescr in
+  let module R = Cluster_api.Raw.Reader.BuildDescr in
+  let descr = Cluster_api.Raw.Reader.of_pointer descr in
   let cache_hint = R.cache_hint_get descr in
   let secrets = R.secrets_get_list descr |> List.map (fun t -> Cluster_api.Raw.Reader.Secret.(id_get t, value_get t)) in
   begin match Cluster_api.Submission.get_action descr with

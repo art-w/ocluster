@@ -24,7 +24,7 @@ val v : state_dir:string -> t
 val with_build_context :
   t ->
   log:Log_data.t ->
-  Cluster_api.Raw.Reader.JobDescr.t ->
+  Cluster_api.Raw.Reader.BuildDescr.t ->
   (string -> ('a, [`Cancelled | `Msg of string]) Lwt_result.t) ->
   ('a, [`Cancelled | `Msg of string]) Lwt_result.t
 (** [with_build_context t ~log descr fn] runs [fn dir], where [dir] is a

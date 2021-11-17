@@ -107,11 +107,12 @@ let include_git descr =
   | Obuilder_build _ -> false
 
 let build_context t ~log ~tmpdir descr =
-  match Cluster_api.Raw.Reader.JobDescr.commits_get_list descr |> List.map Hash.of_hex with
+  let module JD = Cluster_api.Raw.Reader.BuildDescr in
+  match JD.commits_get_list descr |> List.map Hash.of_hex with
   | [] ->
     Lwt_result.return ()
   | (c :: cs) as commits ->
-    let repository = repo t (Cluster_api.Raw.Reader.JobDescr.repository_get descr) in
+    let repository = repo t (JD.repository_get descr) in
     Lwt_mutex.with_lock repository.lock (fun () ->
         Lwt_switch.with_switch @@ fun switch -> (* Don't let the user cancel these operations. *)
         begin

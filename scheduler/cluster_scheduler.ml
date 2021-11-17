@@ -38,7 +38,8 @@ module Item = struct
   let cost_estimate _t = default_estimate
 
   let cache_hint t =
-    Cluster_api.Raw.Reader.JobDescr.cache_hint_get t.descr
+    let job_descr = Cluster_api.Raw.Reader.of_pointer t.descr in
+    Cluster_api.Raw.Reader.JobDescr.cache_hint_get job_descr
 
   let pp f t =
     match cache_hint t with

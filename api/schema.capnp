@@ -49,7 +49,7 @@ struct Secret {
   # The secret value.
 }
 
-struct JobDescr {
+struct BuildDescr {
   action :union {
     dockerBuild @0 :DockerBuild;
     obuilder    @4 :OBuilder;
@@ -69,6 +69,18 @@ struct JobDescr {
   secrets @5 :List(Secret);
   # Secret id-value pairs provided to the job. 
 }
+
+struct JobDescr {
+  descr @0 :AnyPointer;
+
+  cacheHint @1 :Text;
+  # Try to place jobs with the same cache_hint on the same node.
+}
+
+using AnyJobDescr = AnyPointer;
+# AnyJobDescr is typically BuildDescr or JobDescr.
+# The scheduler requires it to have a field: cacheHint @1 :Text
+# to dispatch jobs with the same cache_hint on the same worker.
 
 interface Job {
   log     @0 (start :Int64) -> (log :AnyPointer, next :Int64);
@@ -90,7 +102,7 @@ interface Job {
 }
 
 interface Queue {
-  pop       @0 (job :Job) -> (descr :JobDescr);
+  pop       @0 (job :Job) -> (descr :AnyJobDescr);
 
   setActive @1 (active :Bool) -> ();
   # When a queue is made inactive any items on it are returned to the main
@@ -134,7 +146,7 @@ interface Ticket {
 }
 
 interface Submission {
-  submit @0 (pool :Text, descr :JobDescr, urgent :Bool) -> (ticket :Ticket);
+  submit @0 (pool :Text, descr :AnyJobDescr, urgent :Bool) -> (ticket :Ticket);
 }
 
 struct WorkerInfo {
