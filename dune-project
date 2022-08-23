@@ -81,6 +81,7 @@
   fpath
   logs
   (lwt (>= 5.4.1))
+  (prometheus-app (>= 1.2))
   capnp-rpc-lwt
   cohttp-lwt-unix
   (extunix (>= 0.3.2))
